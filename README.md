@@ -18,13 +18,18 @@ Models were trained on four events and tested on an **unseen event** (Sydney Sie
 
 | Model | Accuracy | Macro Precision | Macro Recall | Macro F1 |
 |---|---|---|---|---|
-| Random Forest (text only) | 0.688 | 0.681 | 0.675 | 0.677 |
-| **Random Forest (all features)** | **0.723** | **0.722** | **0.705** | **0.708** |
-| SVM (all features) | 0.663 | 0.701 | 0.618 | 0.599 |
+| Random Forest (text only) | 0.632 | 0.622 | 0.608 | 0.607 |
+| Random Forest (all features) | 0.686 | 0.691 | 0.658 | 0.658 |
+| **SVM (all features)** | **0.692** | **0.704** | **0.661** | **0.659** |
 
-**Best model: Random Forest with text and conversation features, macro F1 = 0.71, accuracy = 72%.**
-Adding the reply-based features raised macro F1 by about 3 points over text alone.
-With a threshold of 0.65, the Trend Emergence Score flagged 15 of the 1,221 test threads for priority triage.
+**Best model: SVM with text and conversation features, macro F1 = 0.66, accuracy = 69%.** The Random Forest on the
+same features is effectively tied (macro F1 = 0.658).
+Adding the reply-based features raised macro F1 by about 5 points over text alone (0.607 → 0.658).
+With a threshold of 0.65, the Trend Emergence Score flagged 11 of the 1,221 test threads for priority triage.
+
+All feature transformers (TF-IDF, feature selection, scaling) are fitted on the training events only, so no
+information from the test event leaks into training. The confusion matrix and feature importances below are for the
+Random Forest (all features), which also drives the Trend Emergence Score.
 
 | ROC curves | Confusion matrix | Top features |
 |---|---|---|
@@ -40,7 +45,8 @@ With a threshold of 0.65, the Trend Emergence Score flagged 15 of the 1,221 test
   (for example *fake*, *hoax*, *unconfirmed*, *source*, *really*).
 - **Reply activity.** The number of replies and the replies per hour within the window.
 
-Numerical features are standardised with `StandardScaler`.
+Numerical features are standardised with `StandardScaler`. TF-IDF, `SelectKBest` and `StandardScaler` are all
+fitted on the training events and then applied unchanged to the test event.
 
 **Models.** All from scikit-learn:
 
